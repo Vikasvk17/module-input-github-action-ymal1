@@ -44,17 +44,13 @@ jobs:
   terraform:
     runs-on: ubuntu-latest
 
-    env:
-      TERRAFORM_REPO_URL: "https://github.com/Vikasvk17/module-input-github-action-ymal.git"  # The repo you're cloning
-      TERRAFORM_REPO_BRANCH: "main"  # Branch to clone
-
     steps:
       - name: Checkout Actions Repository
         uses: actions/checkout@v3
 
       - name: Clone Terraform Repository
         run: |
-          git clone --branch $TERRAFORM_REPO_BRANCH https://$GITHUB_ACTOR:${{ secrets.TERRAFORM_REPO_TOKEN }}@github.com/Vikasvk17/module-input-github-action-ymal.git terraform-code
+          git clone --branch main https://$GITHUB_ACTOR:${{ secrets.TERRAFORM_REPO_TOKEN }}@github.com/Vikasvk17/module-input-github-action-ymal.git terraform-code
           cd terraform-code
 
       - name: Set Environment Variables for Terraform
