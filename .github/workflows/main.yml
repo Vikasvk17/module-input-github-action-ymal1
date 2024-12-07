@@ -45,14 +45,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout the GitHub repository to get the code
       - name: Checkout Actions Repository
         uses: actions/checkout@v3
 
+      # Clone the Terraform repository
       - name: Clone Terraform Repository
         run: |
           git clone --branch main https://$GITHUB_ACTOR:${{ secrets.TERRAFORM_REPO_TOKEN }}@github.com/Vikasvk17/module-input-github-action-ymal.git terraform-code
           cd terraform-code
 
+      # Set up the Terraform environment variables for inputs
       - name: Set Environment Variables for Terraform
         run: |
           echo "TF_VARS='{
@@ -67,19 +70,43 @@ jobs:
             \"subnet_ids\": \"${{ github.event.inputs.subnet_ids }}\"
           }' >> $GITHUB_ENV
 
+      # Setup Terraform CLI
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.0
 
+      # Initialize Terraform
       - name: Initialize Terraform
         run: terraform init
         working-directory: ./terraform-code
 
+      # Generate a plan using Terraform with the passed inputs
       - name: Plan Terraform
-        run: terraform plan -var "vpc_cidr=${{ github.event.inputs.vpc_cidr }}" -var "vpc_name=${{ github.event.inputs.vpc_name }}" -var "bucket_name=${{ github.event.inputs.bucket_name }}" -var "ami=${{ github.event.inputs.ami }}" -var "instance_type=${{ github.event.inputs.instance_type }}" -var "asg_name=${{ github.event.inputs.asg_name }}" -var "min_size=${{ github.event.inputs.min_size }}" -var "max_size=${{ github.event.inputs.max_size }}" -var "subnet_ids=${{ github.event.inputs.subnet_ids }}"
+        run: |
+          terraform plan \
+            -var "vpc_cidr=${{ github.event.inputs.vpc_cidr }}" \
+            -var "vpc_name=${{ github.event.inputs.vpc_name }}" \
+            -var "bucket_name=${{ github.event.inputs.bucket_name }}" \
+            -var "ami=${{ github.event.inputs.ami }}" \
+            -var "instance_type=${{ github.event.inputs.instance_type }}" \
+            -var "asg_name=${{ github.event.inputs.asg_name }}" \
+            -var "min_size=${{ github.event.inputs.min_size }}" \
+            -var "max_size=${{ github.event.inputs.max_size }}" \
+            -var "subnet_ids=${{ github.event.inputs.subnet_ids }}"
         working-directory: ./terraform-code
 
+      # Apply Terraform plan
       - name: Apply Terraform
-        run: terraform apply -auto-approve -var "vpc_cidr=${{ github.event.inputs.vpc_cidr }}" -var "vpc_name=${{ github.event.inputs.vpc_name }}" -var "bucket_name=${{ github.event.inputs.bucket_name }}" -var "ami=${{ github.event.inputs.ami }}" -var "instance_type=${{ github.event.inputs.instance_type }}" -var "asg_name=${{ github.event.inputs.asg_name }}" -var "min_size=${{ github.event.inputs.min_size }}" -var "max_size=${{ github.event.inputs.max_size }}" -var "subnet_ids=${{ github.event.inputs.subnet_ids }}"
+        run: |
+          terraform apply -auto-approve \
+            -var "vpc_cidr=${{ github.event.inputs.vpc_cidr }}" \
+            -var "vpc_name=${{ github.event.inputs.vpc_name }}" \
+            -var "bucket_name=${{ github.event.inputs.bucket_name }}" \
+            -var "ami=${{ github.event.inputs.ami }}" \
+            -var "instance_type=${{ github.event.inputs.instance_type }}" \
+            -var "asg_name=${{ github.event.inputs.asg_name }}" \
+            -var "min_size=${{ github.event.inputs.min_size }}" \
+            -var "max_size=${{ github.event.inputs.max_size }}" \
+            -var "subnet_ids=${{ github.event.inputs.subnet_ids }}"
         working-directory: ./terraform-code
