@@ -31,7 +31,7 @@ jobs:
 
       - name: Clone Terraform Repository
         run: |
-          git clone --branch $TERRAFORM_REPO_BRANCH $TERRAFORM_REPO_URL terraform-code
+          git clone --branch $TERRAFORM_REPO_BRANCH https://$GITHUB_ACTOR:${{ secrets.TERRAFORM_REPO_TOKEN }}@github.com/Vikasvk17/terraform-repo.git terraform-code
           cd terraform-code
 
       - name: Parse Terraform Variables
