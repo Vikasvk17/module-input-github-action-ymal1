@@ -1,0 +1,101 @@
+name: Terraform Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      vpc_cidr:
+        description: "CIDR block for the VPC"
+        required: true
+        default: "10.0.0.0/16"
+      vpc_name:
+        description: "Name of the VPC"
+        required: true
+        default: "my-vpc"
+      bucket_name:
+        description: "Name of the S3 bucket"
+        required: true
+        default: "my-terraform-bucket"
+      ami:
+        description: "AMI ID for EC2 instance"
+        required: true
+        default: "ami-12345678"
+      instance_type:
+        description: "Instance type for EC2 instance"
+        required: true
+        default: "t2.micro"
+      instance_name:
+        description: "Name of the EC2 instance"
+        required: true
+        default: "my-instance"
+      asg_name:
+        description: "Name of the Auto Scaling Group"
+        required: true
+        default: "my-asg"
+      min_size:
+        description: "Minimum size for Auto Scaling Group"
+        required: true
+        default: 1
+      max_size:
+        description: "Maximum size for Auto Scaling Group"
+        required: true
+        default: 3
+      subnet_ids:
+        description: "Comma-separated subnet IDs"
+        required: true
+        default: "subnet-12345,subnet-67890"
+      terraform_repo_url:
+        description: "Git URL for the Terraform repository"
+        required: true
+        default: "https://github.com/your-org/terraform-repo.git"
+      terraform_repo_branch:
+        description: "Branch name of the Terraform repository"
+        required: false
+        default: "main"
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Actions Repository
+        uses: actions/checkout@v3
+
+      - name: Clone Terraform Repository
+        run: |
+          git clone --branch ${{ github.event.inputs.terraform_repo_branch }} ${{ github.event.inputs.terraform_repo_url }} terraform-code
+          cd terraform-code
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.0
+
+      - name: Initialize Terraform
+        run: terraform init
+        working-directory: ./terraform-code
+
+      - name: Plan Terraform
+        run: terraform plan -var "vpc_cidr=${{ github.event.inputs.vpc_cidr }}" \
+                            -var "vpc_name=${{ github.event.inputs.vpc_name }}" \
+                            -var "bucket_name=${{ github.event.inputs.bucket_name }}" \
+                            -var "ami=${{ github.event.inputs.ami }}" \
+                            -var "instance_type=${{ github.event.inputs.instance_type }}" \
+                            -var "instance_name=${{ github.event.inputs.instance_name }}" \
+                            -var "asg_name=${{ github.event.inputs.asg_name }}" \
+                            -var "min_size=${{ github.event.inputs.min_size }}" \
+                            -var "max_size=${{ github.event.inputs.max_size }}" \
+                            -var "subnet_ids=${{ github.event.inputs.subnet_ids }}"
+        working-directory: ./terraform-code
+
+      - name: Apply Terraform
+        run: terraform apply -auto-approve -var "vpc_cidr=${{ github.event.inputs.vpc_cidr }}" \
+                                          -var "vpc_name=${{ github.event.inputs.vpc_name }}" \
+                                          -var "bucket_name=${{ github.event.inputs.bucket_name }}" \
+                                          -var "ami=${{ github.event.inputs.ami }}" \
+                                          -var "instance_type=${{ github.event.inputs.instance_type }}" \
+                                          -var "instance_name=${{ github.event.inputs.instance_name }}" \
+                                          -var "asg_name=${{ github.event.inputs.asg_name }}" \
+                                          -var "min_size=${{ github.event.inputs.min_size }}" \
+                                          -var "max_size=${{ github.event.inputs.max_size }}" \
+                                          -var "subnet_ids=${{ github.event.inputs.subnet_ids }}"
+        working-directory: ./terraform-code
