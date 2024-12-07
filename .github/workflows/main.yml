@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the GitHub repository to get the code
+      # Checkout the repository
       - name: Checkout Actions Repository
         uses: actions/checkout@v3
 
@@ -55,7 +55,7 @@ jobs:
           git clone --branch main https://$GITHUB_ACTOR:${{ secrets.TERRAFORM_REPO_TOKEN }}@github.com/Vikasvk17/module-input-github-action-ymal.git terraform-code
           cd terraform-code
 
-      # Set up the Terraform environment variables for inputs
+      # Set environment variables for Terraform
       - name: Set Environment Variables for Terraform
         run: |
           echo "TF_VARS='{
@@ -81,8 +81,8 @@ jobs:
         run: terraform init
         working-directory: ./terraform-code
 
-      # Generate a plan using Terraform with the passed inputs
-      - name: Plan Terraform
+      # Run terraform plan with passed input values
+      - name: Run Terraform Plan
         run: |
           terraform plan \
             -var "vpc_cidr=${{ github.event.inputs.vpc_cidr }}" \
@@ -96,8 +96,8 @@ jobs:
             -var "subnet_ids=${{ github.event.inputs.subnet_ids }}"
         working-directory: ./terraform-code
 
-      # Apply Terraform plan
-      - name: Apply Terraform
+      # Apply terraform plan
+      - name: Apply Terraform Plan
         run: |
           terraform apply -auto-approve \
             -var "vpc_cidr=${{ github.event.inputs.vpc_cidr }}" \
