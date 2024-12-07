@@ -4,7 +4,44 @@ on:
   push:
     branches:
       - main  # Trigger on push to the main branch (change as needed)
-  workflow_dispatch: # Manually trigger the workflow with inputs
+  workflow_dispatch:  # Manually trigger the workflow with inputs
+    inputs:
+      vpc_cidr:
+        description: 'CIDR block for VPC'
+        required: true
+        default: '10.0.0.0/16'
+      vpc_name:
+        description: 'Name of the VPC'
+        required: true
+        default: 'my-vpc'
+      bucket_name:
+        description: 'S3 Bucket Name'
+        required: true
+        default: 'my-terraform-bucket'
+      ami:
+        description: 'AMI ID'
+        required: true
+        default: 'ami-12345678'
+      instance_type:
+        description: 'EC2 Instance Type'
+        required: true
+        default: 't2.micro'
+      asg_name:
+        description: 'Auto Scaling Group Name'
+        required: true
+        default: 'my-asg'
+      min_size:
+        description: 'Minimum Size of ASG'
+        required: true
+        default: '1'
+      max_size:
+        description: 'Maximum Size of ASG'
+        required: true
+        default: '3'
+      subnet_ids:
+        description: 'Comma separated list of Subnet IDs'
+        required: true
+        default: 'subnet-12345,subnet-67890'
 
 jobs:
   terraform:
@@ -26,7 +63,7 @@ jobs:
       - name: Parse Terraform Variables
         id: parse_vars
         run: |
-          echo "PARSED_VARS=$(echo '${TF_VARS}' | jq -r 'to_entries | map("--var \(.key)=\(.value|tostring)") | join(" ")')" >> $GITHUB_ENV
+          echo "PARSED_VARS=$(echo '${{ github.event.inputs }}' | jq -r 'to_entries | map("--var \(.key)=\(.value|tostring)") | join(" ")')" >> $GITHUB_ENV
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -44,42 +81,3 @@ jobs:
       - name: Apply Terraform
         run: terraform apply -auto-approve $PARSED_VARS
         working-directory: ./terraform-code
-
-inputs:
-  vpc_cidr:
-    description: 'CIDR block for VPC'
-    required: true
-    default: '10.0.0.0/16'
-  vpc_name:
-    description: 'Name of the VPC'
-    required: true
-    default: 'my-vpc'
-  bucket_name:
-    description: 'S3 Bucket Name'
-    required: true
-    default: 'my-terraform-bucket'
-  ami:
-    description: 'AMI ID'
-    required: true
-    default: 'ami-12345678'
-  instance_type:
-    description: 'EC2 Instance Type'
-    required: true
-    default: 't2.micro'
-  asg_name:
-    description: 'Auto Scaling Group Name'
-    required: true
-    default: 'my-asg'
-  min_size:
-    description: 'Minimum Size of ASG'
-    required: true
-    default: '1'
-  max_size:
-    description: 'Maximum Size of ASG'
-    required: true
-    default: '3'
-  subnet_ids:
-    description: 'Comma separated list of Subnet IDs'
-    required: true
-    default: 'subnet-12345,subnet-67890'
-
