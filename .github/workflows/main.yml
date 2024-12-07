@@ -58,17 +58,15 @@ jobs:
       # Set environment variables for Terraform
       - name: Set Environment Variables for Terraform
         run: |
-          echo "TF_VARS='{
-            \"vpc_cidr\": \"${{ github.event.inputs.vpc_cidr }}\",
-            \"vpc_name\": \"${{ github.event.inputs.vpc_name }}\",
-            \"bucket_name\": \"${{ github.event.inputs.bucket_name }}\",
-            \"ami\": \"${{ github.event.inputs.ami }}\",
-            \"instance_type\": \"${{ github.event.inputs.instance_type }}\",
-            \"asg_name\": \"${{ github.event.inputs.asg_name }}\",
-            \"min_size\": \"${{ github.event.inputs.min_size }}\",
-            \"max_size\": \"${{ github.event.inputs.max_size }}\",
-            \"subnet_ids\": \"${{ github.event.inputs.subnet_ids }}\"
-          }' >> $GITHUB_ENV
+          echo "vpc_cidr=${{ github.event.inputs.vpc_cidr }}" >> $GITHUB_ENV
+          echo "vpc_name=${{ github.event.inputs.vpc_name }}" >> $GITHUB_ENV
+          echo "bucket_name=${{ github.event.inputs.bucket_name }}" >> $GITHUB_ENV
+          echo "ami=${{ github.event.inputs.ami }}" >> $GITHUB_ENV
+          echo "instance_type=${{ github.event.inputs.instance_type }}" >> $GITHUB_ENV
+          echo "asg_name=${{ github.event.inputs.asg_name }}" >> $GITHUB_ENV
+          echo "min_size=${{ github.event.inputs.min_size }}" >> $GITHUB_ENV
+          echo "max_size=${{ github.event.inputs.max_size }}" >> $GITHUB_ENV
+          echo "subnet_ids=${{ github.event.inputs.subnet_ids }}" >> $GITHUB_ENV
 
       # Setup Terraform CLI
       - name: Setup Terraform
