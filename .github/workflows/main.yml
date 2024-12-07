@@ -3,15 +3,15 @@ name: Terraform Deployment from External Repository
 on:
   push:
     branches:
-      - main  # Adjust branch as required
+      - main  # Adjust the branch name as required
 
 jobs:
   terraform:
     runs-on: ubuntu-latest
 
     env:
-      TERRAFORM_REPO_URL: "https://github.com/Vikasvk17/terraform-repo.git" # Replace with your Terraform repo URL
-      TERRAFORM_REPO_BRANCH: "main" # Adjust the branch name
+      TERRAFORM_REPO_URL: "https://github.com/Vikasvk17/module-input-github-action-ymal.git"  # The repo you're cloning
+      TERRAFORM_REPO_BRANCH: "main"  # Branch to clone
       TF_VARS: |
         {
           "vpc_cidr": "10.0.0.0/16",
@@ -31,7 +31,7 @@ jobs:
 
       - name: Clone Terraform Repository
         run: |
-          git clone --branch $TERRAFORM_REPO_BRANCH https://$GITHUB_ACTOR:${{ secrets.TERRAFORM_REPO_TOKEN }}@github.com/Vikasvk17/terraform-repo.git terraform-code
+          git clone --branch $TERRAFORM_REPO_BRANCH https://$GITHUB_ACTOR:${{ secrets.TERRAFORM_REPO_TOKEN }}@github.com/Vikasvk17/module-input-github-action-ymal.git terraform-code
           cd terraform-code
 
       - name: Parse Terraform Variables
