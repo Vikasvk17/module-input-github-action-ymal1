@@ -39,6 +39,10 @@ on:
         description: 'Comma separated list of Subnet IDs'
         required: true
         default: 'subnet-12345,subnet-67890'
+      instance_name:
+        description: 'Name of the EC2 Instance'
+        required: true
+        default: 'my-instance'  # Provide a default value if possible
 
 jobs:
   terraform:
@@ -67,6 +71,7 @@ jobs:
           echo "min_size=${{ github.event.inputs.min_size }}" >> $GITHUB_ENV
           echo "max_size=${{ github.event.inputs.max_size }}" >> $GITHUB_ENV
           echo "subnet_ids=${{ github.event.inputs.subnet_ids }}" >> $GITHUB_ENV
+          echo "instance_name=${{ github.event.inputs.instance_name }}" >> $GITHUB_ENV
 
       # Setup Terraform CLI
       - name: Setup Terraform
@@ -91,7 +96,8 @@ jobs:
             -var "asg_name=${{ github.event.inputs.asg_name }}" \
             -var "min_size=${{ github.event.inputs.min_size }}" \
             -var "max_size=${{ github.event.inputs.max_size }}" \
-            -var "subnet_ids=${{ github.event.inputs.subnet_ids }}"
+            -var "subnet_ids=${{ github.event.inputs.subnet_ids }}" \
+            -var "instance_name=${{ github.event.inputs.instance_name }}"
         working-directory: ./terraform-code
 
       # Apply terraform plan
@@ -106,5 +112,6 @@ jobs:
             -var "asg_name=${{ github.event.inputs.asg_name }}" \
             -var "min_size=${{ github.event.inputs.min_size }}" \
             -var "max_size=${{ github.event.inputs.max_size }}" \
-            -var "subnet_ids=${{ github.event.inputs.subnet_ids }}"
+            -var "subnet_ids=${{ github.event.inputs.subnet_ids }}" \
+            -var "instance_name=${{ github.event.inputs.instance_name }}"
         working-directory: ./terraform-code
