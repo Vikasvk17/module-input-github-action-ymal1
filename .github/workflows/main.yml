@@ -1,15 +1,17 @@
-name: Terraform Deployment
+name: Terraform Deployment from External Repository
 
 on:
   push:
     branches:
-      - main  # Adjust the branch name as needed
+      - main  # Adjust branch as required
 
 jobs:
   terraform:
     runs-on: ubuntu-latest
 
     env:
+      TERRAFORM_REPO_URL: "https://github.com/Vikasvk17/terraform-repo.git" # Replace with your Terraform repo URL
+      TERRAFORM_REPO_BRANCH: "main" # Adjust the branch name
       TF_VARS: |
         {
           "vpc_cidr": "10.0.0.0/16",
@@ -17,14 +19,11 @@ jobs:
           "bucket_name": "my-terraform-bucket",
           "ami": "ami-12345678",
           "instance_type": "t2.micro",
-          "instance_name": "my-instance",
           "asg_name": "my-asg",
           "min_size": 1,
           "max_size": 3,
           "subnet_ids": ["subnet-12345", "subnet-67890"]
         }
-      TERRAFORM_REPO_URL: "https://github.com/your-org/terraform-repo.git"
-      TERRAFORM_REPO_BRANCH: "main"
 
     steps:
       - name: Checkout Actions Repository
